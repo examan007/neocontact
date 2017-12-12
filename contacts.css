@@ -46,3 +46,16 @@
 .table-user-information > tbody > tr > td {
     border-top: 0;
 }
+
+.attr-list-device {
+    float: right;
+}
+
+.attr-list-tablet {
+    float: left;
+}
+
+dl {
+    margin-bottom: 0px;
+}
+

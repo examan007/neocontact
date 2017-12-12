@@ -52,57 +52,35 @@
                                              src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
                                              alt="User Pic">
                                     </div>
-                                    <div class="col-xs-10 col-sm-10 hidden-md hidden-lg">
+                                    <div class="col-xs-10 hidden-sm hidden-md hidden-lg">
                                         <strong>{{obj.Name}}</strong><br>
-                                        <dl>
-                                            <dt>Address:</dt>
-                                            <dd>{{obj.Address}}</dd>
-                                            <dt>Phone:</dt>
-                                            <dd>{{obj.Phone}}</dd>
-                                            <dt>Email:</dt>
-                                            <dd>{{obj.Email}}</dd>
-                                            <dt>Home Directory:</dt>
-                                            <dd>{{obj.HomeDir}}</dd>
-                                            <dt>Location:</dt>
-                                            <dd>{{obj.Location}}</dd>
-                                            <dt>User title:</dt>
-                                            <dd>{{obj.UserTitle}}</dd>
-                                           <dt>User level:</dt>
-                                            <dd>{{obj.UserLevel}}</dd>
-
-                                        </dl>
+                                        <ul class="attr-list-device">
+                                            <li ng-repeat="temp in Contacts.template">
+                                                <dl>
+                                                    <dt>{{temp.label}}:</dt>
+                                                    <dd>{{obj[temp.name]}}</dd>
+                                                </dl>
+                                            </li>
+                                        </ul>
                                     </div>
-                                    <div class=" col-md-9 col-lg-9 hidden-xs hidden-sm">
+                                    <div class="hidden-xs hidden-sm hidden-md hidden-lg">
+                                        <strong>{{obj.Name}}</strong><br>
+                                        <ul class="attr-list-tablet">
+                                            <li ng-repeat="temp in Contacts.template">
+                                                <dl>
+                                                    <dt>{{temp.label}}:</dt>
+                                                    <dd>{{obj[temp.name]}}</dd>
+                                                </dl>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class=" col-md-9 col-lg-9 hidden-xs col-sm-10">
                                         <strong>{{obj.Name}}</strong><br>
                                         <table class="table table-user-information">
                                             <tbody>
-                                                <tr>
-                                                    <td>Address:</td>
-                                                    <td>{{obj.Address}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Phone:</td>
-                                                    <td>{{obj.Phone}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Email:</td>
-                                                    <td>{{obj.Email}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Home Dricetory:</td>
-                                                    <td>{{obj.HomeDir}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Location:</td>
-                                                    <td>{{obj.Location}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Title:</td>
-                                                    <td>{{obj.UserTitle}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>User level:</td>
-                                                    <td>{{obj.UserLevel}}</td>
+                                                <tr ng-repeat="temp in Contacts.template">
+                                                    <td>{{temp.label}}:</td>
+                                                    <td>{{obj[temp.name]}}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

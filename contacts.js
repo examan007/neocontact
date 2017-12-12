@@ -13,6 +13,36 @@ function execute_ContactApp() {
         Contacts.update = function () {
             Contacts.scope.$apply();
         }
+        Contacts.template = [
+        {
+            name: 'Phone',
+            label: 'Phone number'
+        },
+        {
+            name: 'Address',
+            label: 'Postal address'
+        },
+        {
+            name: 'Email',
+            label: 'Email address'
+        },
+        {
+            name: 'HomeDir',
+            label: 'Home directory'
+        },
+        {
+            name: 'Location',
+            label: 'Office location'
+        },
+        {
+            name: 'UserTitle',
+            label: 'Role title'
+        },
+        {
+            name: 'UserLevel',
+            label: 'Role level'
+        }
+        ];
         Contacts.objects = [
         {
             Name: "Contact One",
