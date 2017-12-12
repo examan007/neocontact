@@ -10,8 +10,38 @@ function execute_ContactApp() {
     ContactModule.controller('ContactController', ['$scope', function ($scope) {
         Contacts = this;
         Contacts.scope = $scope;
+        Contacts.contactname = '';
         Contacts.update = function () {
             Contacts.scope.$apply();
+        }
+        Contacts.edit = function (obj) {
+            console.log('edit obj=' + JSON.stringify(obj));
+            obj.showclass = 'noshow';
+            obj.editclass = 'show';
+        }
+        Contacts.save = function (obj) {
+            console.log('save obj=' + JSON.stringify(obj));
+            obj.showclass = 'show';
+            obj.editclass = 'noshow';
+        }
+        Contacts.remove = function (obj) {
+            console.log('remove obj=' + JSON.stringify(obj));
+        }
+        Contacts.upload = function (obj) {
+            console.log('upload obj=' + JSON.stringify(obj));
+        }
+        Contacts.create = function () {
+            console.log('create obj=[' + JSON.stringify(Contacts.contactname) + ']');
+            if (Contacts.contactname.length <= 0) { } else {
+                Contacts.objects.unshift({
+                    Name: Contacts.contactname,
+                    showclass: 'noshow',
+                    editclass: 'show'
+                });
+            }
+        }
+        Contacts.search = function () {
+            console.log('search obj=[' + JSON.stringify(Contacts.contactname) + ']');
         }
         Contacts.template = [
         {
@@ -45,16 +75,16 @@ function execute_ContactApp() {
         ];
         Contacts.objects = [
         {
-            Name: "Contact One",
+            Name: "James Hayes",
             Key: "ContactOne",
-            Phone: "555-555-5555",
-            Address: "1 Yonge Street",
-            Email: "contact.one@gmail.com",
+            Phone: "416-575-7301",
+            Address: "Rathburn Road West",
+            Email: "james.hayes@neolation.com",
             SmallImage: "images/IMG_20160729_095132.jpg",
             LargeImage: "images/IMG_20160729_095132.jpg",
             HomeDir: '/home/contactone',
             Location: "E502",
-            UserTitle: "Administrator",
+            UserTitle: "Full stack developer",
             UserLevel: "Red"
         },
         {
@@ -70,6 +100,9 @@ function execute_ContactApp() {
             UserTitle: "Developer",
             UserLevel: "White"
         }];
+        Contacts.objects.forEach( function (obj) {
+            obj.editclass = 'noshow';
+        });
         Contacts.hashmap = [];
         Contacts.objects.forEach( function (obj) {
             Contacts.hashmap[obj.Key] = obj;
@@ -108,7 +141,6 @@ $(document).ready(function() {
 
     $('button').click(function(e) {
         e.preventDefault();
-        alert("This is a demo.\n :-)");
     });
 
     window.setTimeout(initImages, 0);

@@ -16,15 +16,30 @@
     <script src="libs/lib/angular.min.js"></script>
     <script src="libs/lib/angular-ui-router.min.js"></script>
     <script src="contacts.js"></script>
-    <br><br>
     <div id="ContactManager" ng-app="ContactManager">
         <div ng-controller="ContactController as Contacts" class="container">
+            <div class="well col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
+                <div class="row user-row">
+                    <span class="pull-right">
+                        Contact Name
+                        <input type="text" ng-model="Contacts.contactname" />
+                        <button class="btn btn-sm btn-primary" type="button"
+                                ng-click="Contacts.create();">
+                            <i class="glyphicon glyphicon-plus"></i>
+                        </button>
+                        <button class="btn btn-sm btn-primary" type="button"
+                                ng-click="Contacts.search();">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
             <div ng-repeat="obj in Contacts.objects" class="well col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
                 <div class="row user-row">
                     <div class="col-xs-3 col-sm-2 col-md-1 col-lg-1">
                         <img class="img-thumb"
-                             src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="SmallImage"
-                             alt="User Pic">
+                                src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="SmallImage"
+                                alt="User Pic">
                     </div>
                     <div class="col-xs-8 col-sm-9 col-md-10 col-lg-10">
                         <strong>{{obj.Name}}</strong><br>
@@ -44,13 +59,13 @@
                                 <div class="row">
                                     <div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
                                         <img class="img-circle"
-                                             src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
-                                             alt="User Pic">
+                                                src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
+                                                alt="User Pic">
                                     </div>
                                     <div class="col-xs-2 col-sm-2 hidden-md hidden-lg">
                                         <img class="img-circle"
-                                             src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
-                                             alt="User Pic">
+                                                src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
+                                                alt="User Pic">
                                     </div>
                                     <div class="col-xs-10 hidden-sm hidden-md hidden-lg">
                                         <strong>{{obj.Name}}</strong><br>
@@ -58,29 +73,38 @@
                                             <li ng-repeat="temp in Contacts.template">
                                                 <dl>
                                                     <dt>{{temp.label}}:</dt>
-                                                    <dd>{{obj[temp.name]}}</dd>
+                                                    <dd>
+                                                        <div class="{{obj.editclass}}">
+                                                            <input type="text"
+                                                                    name="{{obj.Key}}.{{temp.name}}"
+                                                                    value="{{obj[temp.name]}}"
+                                                                    ng-model="obj[temp.name]" />
+                                                        </div>
+                                                        <div class="{{obj.showclass}}">
+                                                            {{obj[temp.name]}}
+                                                        </div>
+                                                    </dd>
                                                 </dl>
                                             </li>
                                         </ul>
                                     </div>
-                                    <div class="hidden-xs hidden-sm hidden-md hidden-lg">
-                                        <strong>{{obj.Name}}</strong><br>
-                                        <ul class="attr-list-tablet">
-                                            <li ng-repeat="temp in Contacts.template">
-                                                <dl>
-                                                    <dt>{{temp.label}}:</dt>
-                                                    <dd>{{obj[temp.name]}}</dd>
-                                                </dl>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class=" col-md-9 col-lg-9 hidden-xs col-sm-10">
+                                    <div class="col-md-9 col-lg-9 hidden-xs col-sm-9">
                                         <strong>{{obj.Name}}</strong><br>
                                         <table class="table table-user-information">
                                             <tbody>
                                                 <tr ng-repeat="temp in Contacts.template">
                                                     <td>{{temp.label}}:</td>
-                                                    <td>{{obj[temp.name]}}</td>
+                                                    <td>
+                                                        <div class="{{obj.editclass}}">
+                                                            <input type="text"
+                                                                    name="{{obj.Key}}.{{temp.name}}"
+                                                                    value="{{obj[temp.name]}}"
+                                                                    ng-model="obj[temp.name]" />
+                                                        </div>
+                                                        <div class="{{obj.showclass}}">
+                                                            {{obj[temp.name]}}
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -89,21 +113,40 @@
                             </div>
                             <div class="panel-footer">
                                 <button class="btn btn-sm btn-primary" type="button"
+                                        ng-click="Contacts.upload(obj);"
                                         data-toggle="tooltip"
-                                        data-original-title="Send message to user">
-                                    <i class="glyphicon glyphicon-envelope"></i>
+                                        data-original-title="Update profile picture">
+                                    <i class="glyphicon glyphicon-upload"></i>
                                 </button>
                                 <span class="pull-right">
-                                    <button class="btn btn-sm btn-warning" type="button"
-                                            data-toggle="tooltip"
-                                            data-original-title="Edit this user">
-                                        <i class="glyphicon glyphicon-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" type="button"
-                                            data-toggle="tooltip"
-                                            data-original-title="Remove this user">
-                                        <i class="glyphicon glyphicon-remove"></i>
-                                    </button>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <button class="btn btn-sm btn-warning {{obj.showclass}}" type="button"
+                                                        ng-click="Contacts.edit(obj);"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Edit this user">
+                                                    <i class="glyphicon glyphicon-edit"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary {{obj.editclass}}" type="button"
+                                                        ng-click="Contacts.save(obj);"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Save this user">
+                                                    <i class="glyphicon glyphicon-save"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-danger" type="button"
+                                                        ng-click="Contacts.remove(obj);"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Remove this user">
+                                                    <i class="glyphicon glyphicon-remove"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </span>
                             </div>
                         </div>
