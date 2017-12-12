@@ -3,7 +3,7 @@ Simple contact manager based on Bootstrap, JQuery, Angular, Node, and  Express.
 
 ## Installation:
 
- 1. Clone to local `git clone <url> <working directory>`
+ 1. Clone to local `git clone https://github.com/examan007/neocontact.git <working directory>`
  2. Install [nodejs](https://nodejs.org)
  3. `npm install npm-install-all -g`
  4. `cd <working directory>`
