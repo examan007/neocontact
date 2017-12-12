@@ -10,8 +10,7 @@
 }
 
 .img-circle {
-    width: 100px;
-    height: 100px;
+    max-width: 100px;
 }
 .user-row {
     margin-bottom: 14px;
@@ -31,8 +30,13 @@
     cursor: pointer;
 }
 
+.table-user-information {
+    margin-left: 85px;
+}
+
 .table-user-information > tbody > tr {
     border-top: 1px solid rgb(221, 221, 221);
+    padding-left: 85px;
 }
 
 .table-user-information > tbody > tr:first-child {

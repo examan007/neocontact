@@ -1,3 +1,44 @@
+var ContactModule = angular.module('ContactManager', ['ui.router']);
+var Contacts = null;
+execute_ContactApp();
+var ContactManager = {
+    getController: function () {
+        return (Contacts);
+    },
+}
+function execute_ContactApp() {
+    ContactModule.controller('ContactController', ['$scope', function ($scope) {
+        Contact = this;
+        Contact.objects = [
+        {
+            Name: "Contact One",
+            Key: "ContactOne",
+            Phone: "555-555-5555",
+            Address: "1 Yonge Street",
+            Email: "contact.one@gmail.com",
+            SmallImage: 'images/nouserpic-50.png',
+            LargeImage: 'images/nouserpic-225.png',
+            HomeDir: '/home/contactone',
+            Location: "E502",
+            UserTitle: "Administrator",
+            UserLevel: "Red"
+        },
+        {
+            Name: "Contact Two",
+            Key: "ContactTwo",
+            Phone: "555-555-5555",
+            Address: "1 Yonge Street",
+            Email: "contact.one@gmail.com",
+            SmallImage: 'images/nouserpic-50.png',
+            LargeImage: 'images/nouserpic-225.png',
+            HomeDir: "/home/dev",
+            Location: "E501",
+            UserTitle: "Developer",
+            UserLevel: "White"
+        }];
+    }]);
+}
+
 $(document).ready(function() {
     var panels = $('.user-infos');
     var panelsButton = $('.dropdown-user');
