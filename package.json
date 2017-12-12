@@ -1,0 +1,26 @@
+{
+  "name": "dummy",
+  "version": "1.0.0",
+  "description": "This is a dummy description",
+  "main": "",
+  "dependencies": {
+    "angular": "^1.6.7",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "fs": "0.0.1-security",
+    "jquery": "^3.2.1",
+    "moment": "^2.19.4"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "readme": "This is a dummy readme"
+}
