@@ -18,7 +18,14 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.CurrentDirectory = 'c:/wip/neoc20171210/';
+var arg = process.cwd();
+console.log('arg=[' + arg + ']');
+if (typeof(arg) === 'undefined') {
+    app.CurrentDirectory = '/';
+} else {
+    app.CurrentDirectory = arg + '/';
+}
+console.log('app.CurrentDirectory=[' + app.CurrentDirectory + ']');
 
 app.get('*',function(req,res){
   app.showRequest(req);
