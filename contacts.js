@@ -33,15 +33,43 @@ function execute_ContactApp() {
         Contacts.create = function () {
             console.log('create obj=[' + JSON.stringify(Contacts.contactname) + ']');
             if (Contacts.contactname.length <= 0) { } else {
-                Contacts.objects.unshift({
+                var obj = {
                     Name: Contacts.contactname,
+                    SmallImage: 'images/nouserpic-50.png',
+                    LargeImage: 'images/nouserpic-225.png',
                     showclass: 'noshow',
-                    editclass: 'show'
-                });
+                    editclass: 'show',
+                    direction: 'up'
+                };
+                if (addToHashMap(obj) == true) {
+                    Contacts.objects.unshift(obj);
+                }
             }
         }
         Contacts.search = function () {
             console.log('search obj=[' + JSON.stringify(Contacts.contactname) + ']');
+        }
+        Contacts.showWithKey = function (dataFor) {
+            var idFor = $(dataFor);
+            console.log('panelsButton' + JSON.stringify(dataFor));
+            //current button
+            idFor.slideToggle(400, function() {
+            })
+        }
+        Contacts.show = function (obj) {
+            //Contacts.showWithKey(obj.attr('data-for'));
+        }
+        Contacts.expand = function (obj) {
+            var panels = $('.user-infos');
+            if (typeof(obj.direction) === 'undefined') {
+                obj.direction = 'up';
+            } else
+            if (obj.direction === 'up') {
+                obj.direction = 'down';
+            } else {
+                obj.direction = 'up';
+            }
+            Contacts.showWithKey('#' + obj.Key);
         }
         Contacts.template = [
         {
@@ -76,7 +104,6 @@ function execute_ContactApp() {
         Contacts.objects = [
         {
             Name: "James Hayes",
-            Key: "ContactOne",
             Phone: "416-575-7301",
             Address: "Rathburn Road West",
             Email: "james.hayes@neolation.com",
@@ -89,7 +116,6 @@ function execute_ContactApp() {
         },
         {
             Name: "Contact Two",
-            Key: "ContactTwo",
             Phone: "555-555-5555",
             Address: "1 Yonge Street",
             Email: "contact.one@gmail.com",
@@ -102,12 +128,31 @@ function execute_ContactApp() {
         }];
         Contacts.objects.forEach( function (obj) {
             obj.editclass = 'noshow';
+            obj.direction = 'down';
         });
         Contacts.hashmap = [];
+        function addToHashMap(obj) {
+            var ret = false;
+            var isAlpha = function(ch){
+                return /^[A-Z]$/i.test(ch);
+            }
+            obj.Key = obj.Name.replace(' ', '_');
+            if (typeof(Contacts.hashmap[obj.Key]) === 'undefined') {
+                Contacts.hashmap[obj.Key] = obj;
+                ret = true;
+            }
+            return (ret);
+        }
+
         Contacts.objects.forEach( function (obj) {
-            Contacts.hashmap[obj.Key] = obj;
+            addToHashMap(obj);
         });
     }]);
+}
+
+function showAttrs() {
+    //get data-for attribute
+    Contacts.show($(this));
 }
 
 $(document).ready(function() {
@@ -116,26 +161,7 @@ $(document).ready(function() {
     panels.hide();
 
     //Click dropdown
-    panelsButton.click(function() {
-        //get data-for attribute
-        var dataFor = $(this).attr('data-for');
-        var idFor = $(dataFor);
-        console.log('panelsButton' + JSON.stringify(dataFor));
-        //current button
-        var currentButton = $(this);
-        idFor.slideToggle(400, function() {
-            //Completed slidetoggle
-            if(idFor.is(':visible'))
-            {
-                currentButton.html('<i class="glyphicon glyphicon-chevron-up text-muted"></i>');
-            }
-            else
-            {
-                currentButton.html('<i class="glyphicon glyphicon-chevron-down text-muted"></i>');
-            }
-        })
-    });
-
+    panelsButton.click(showAttrs);
 
     $('[data-toggle="tooltip"]').tooltip();
 

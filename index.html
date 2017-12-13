@@ -45,11 +45,12 @@
                         <strong>{{obj.Name}}</strong><br>
                         <span class="text-muted">User level: {{obj.UserLevel}}</span>
                     </div>
-                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 dropdown-user" data-for=".{{obj.Key}}">
-                        <i class="glyphicon glyphicon-chevron-down text-muted"></i>
+                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 dropdown-user"">
+                        <i class="glyphicon glyphicon-chevron-{{obj.direction}} text-muted"
+                           ng-click="Contacts.expand(obj);"></i>
                     </div>
                 </div>
-                <div class="row user-infos {{obj.Key}}">
+                <div id="{{obj.Key}}" class="row user-infos">
                     <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-xs-offset-0 col-sm-offset-0 col-md-offset-1 col-lg-offset-1">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
@@ -76,7 +77,7 @@
                                                     <dd>
                                                         <div class="{{obj.editclass}}">
                                                             <input type="text"
-                                                                    name="{{obj.Key}}.{{temp.name}}"
+                                                                    name="{{obj.Name}}.{{temp.name}}"
                                                                     value="{{obj[temp.name]}}"
                                                                     ng-model="obj[temp.name]" />
                                                         </div>
@@ -97,7 +98,7 @@
                                                     <td>
                                                         <div class="{{obj.editclass}}">
                                                             <input type="text"
-                                                                    name="{{obj.Key}}.{{temp.name}}"
+                                                                    name="{{obj.Name}}.{{temp.name}}"
                                                                     value="{{obj[temp.name]}}"
                                                                     ng-model="obj[temp.name]" />
                                                         </div>
