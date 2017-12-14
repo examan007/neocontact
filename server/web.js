@@ -27,7 +27,87 @@ if (typeof(arg) === 'undefined') {
 }
 console.log('app.CurrentDirectory=[' + app.CurrentDirectory + ']');
 
-app.get('*',function(req,res){
+app.BasePath = 'data/';
+app.loadContacts = function () {
+    var text = '[]';
+    var fs = require('fs');
+    try {
+        text = fs.readFileSync(app.BasePath + 'Contacts.json').toString('utf-8');
+    } catch (e) {
+        console.log('load=' + e.toString());
+    }
+    return (JSON.parse(text));
+}
+app.Contacts = app.loadContacts();
+app.HashMap = []
+app.Contacts.forEach( function (obj) {
+    app.HashMap[obj.Key] = obj;
+});
+console.log('Contacts=' + JSON.stringify(app.Contacts));
+app.saveContacts = function (obj, success, failure) {
+    var fs = require('fs');
+    console.log('save=' + JSON.stringify(obj));
+    try {
+        var contacts = app.loadContacts();
+        fs.writeFileSync(app.BasePath + 'Contacts.' + (new Date()).getTime() + '.json',
+            JSON.stringify(contacts).toString('utf-8'));
+        fs.writeFileSync(app.BasePath + 'Contacts.json',
+            JSON.stringify(obj).toString('utf-8'));
+        success();
+    } catch (e) {
+        console.log('save=' + e.toString());
+        failure(e.toString());
+    }
+}
+app.addContact = function (obj, success, failure) {
+    if (typeof(obj.Key) === 'undefined') {
+        failure('Error; unable to add contact; undefined key!');
+    } else
+    if (typeof(app.HashMap[obj.Key]) === 'undefined') {
+        app.HashMap[obj.Key] = JSON.parse(JSON.stringify(obj));
+        app.Contacts.unshift(obj);
+        app.saveContacts(app.Contacts, success, failure);
+    } else {
+        failure('Error; unable to add contact; already exists!');
+    }
+}
+app.updateContact = function (obj, success, failure) {
+    if (typeof(obj.Key) === 'undefined') {
+        failure('Error; unable to save contact; undefined key!');
+    } else
+    if (typeof(app.HashMap[obj.Key]) === 'undefined') {
+        failure('Error; unable to save contact; does not exist!');
+    } else {
+        app.HashMap[obj.Key] = JSON.parse(JSON.stringify(obj));
+        for (var i = 0; i < app.Contacts.length; i++) {
+            if (app.Contacts[i].Key === obj.Key) {
+                app.Contacts[i] = obj;
+                break;
+            }
+        }
+        app.saveContacts(app.Contacts, success, failure);
+    }
+}
+app.removeContact = function (obj, success, failure) {
+    if (typeof(obj.Key) === 'undefined') {
+        failure('Error; unable to remove contact; undefined key!');
+    } else
+    if (typeof(app.HashMap[obj.Key]) === 'undefined') {
+        failure('Error; unable to remove contact; already removed!');
+    } else {
+        for (var i = 0; i < app.Contacts.length; i++) {
+            if (app.Contacts[i].Key === obj.Key) {
+                try {
+                    delete (app.HashMap[obj.Key]);
+                } catch (e) {}
+                app.Contacts.splice(i, 1);
+                break;
+            }
+        }
+        app.saveContacts(app.Contacts, success, failure);
+    }
+}
+app.get('*',function(req,res) {
   app.showRequest(req);
   var filename = 'index.html';
   var end;
@@ -44,22 +124,8 @@ app.showRequest = function (req) {
     console.log('headers=' + JSON.stringify(req.headers));
     console.log('body=' + JSON.stringify(req.body));
 }
-app.save = function (obj, success, failure) {
-        var fs = require('fs');
-        try {
-            fs.writeFileSync('../logs/blog.' + (new Date()).getTime() + '.json',
-                JSON.stringify(obj).toString('utf-8'));
-            success();
-        } catch (e) {
-            console.log('save=' + e.toString());
-            failure(e.toString());
-        }
-}
-app.post('/private',function(req,res){
+app.post('/private', function (req, res){
     //app.showRequest(req);
-    if (Governor.checkSession(req) == false) {
-        return;
-    }
     app.showRequest(req);
     function getEntry(attrs) {
         var entry = new Object();
@@ -86,16 +152,21 @@ app.post('/private',function(req,res){
         var entry = new Object();
         for(var key in body) {
             console.log('key=' + key);
-            entry = getEntry(eval('[' + key + ']'));
-            console.log(JSON.stringify(entry));
+            entry = eval('[' + key + ']');
+            console.log('getbody' + JSON.stringify(entry));
         }
-        return (entry);
+        return (entry[0]);
     }
     var entry = getBody(req.body);
+    if (Governor.checkSession(req) == false
+        &&
+        entry.operation !== 'retrieve') {
+        //return;
+    }
     var moment = require('moment');
     entry.create = moment().utc();
-    app.save(entry,
-        function () {
+    function success (res) {
+        return (function () {
             res.writeHead(200, {
                 'Content-Type': 'text/html'
             });
@@ -107,8 +178,10 @@ app.post('/private',function(req,res){
             msg = JSON.stringify(obj);
             console.log('RESPONSE=[' + msg + ']');
             res.end(msg);
-        },
-        function (err) {
+        });
+    }
+    function error (res) {
+        return (function (err) {
             res.writeHead(200, {
                 'Content-Type': 'text/html'
             });
@@ -120,13 +193,39 @@ app.post('/private',function(req,res){
             msg = JSON.stringify(obj);
             console.log('RESPONSE=[' + msg + ']');
             res.end(msg);
-        }
-    );
+        });
+    }
+    function retrieve (res) {
+        return (function () {
+            res.writeHead(200, {
+                'Content-Type': 'text/html'
+            });
+            msg = JSON.stringify(app.Contacts);
+            console.log('RESPONSE=[' + msg + ']');
+            res.end(msg);
+        });
+    }
+    if (typeof(entry['operation']) === 'undefined') {
+        error(res)('Error, undefined operation!');
+    } else
+    if (entry.operation === 'create') {
+        app.addContact(entry, success(res), error(res));
+    } else
+    if (entry.operation === 'retrieve') {
+        retrieve(res)();
+    } else 
+    if (entry.operation === 'save') {
+        app.updateContact(entry, success(res), error(res));
+    } else
+    if (entry.operation === 'remove') {
+        app.removeContact(entry, success(res), error(res));
+    } else {
+        error(res)('Error, operation not implemented!');
+    }
 });
-app.listen(3030,function(){
+app.listen(3030, function () {
   console.log("Started on PORT 3030");
-})
-
+});
 
 function init() {
     app.use(function(req, res, next) {

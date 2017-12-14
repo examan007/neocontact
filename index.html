@@ -4,7 +4,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="robots" content="noindex, nofollow">
-
     <title>Contacts</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -16,6 +15,9 @@
     <script src="libs/lib/angular.min.js"></script>
     <script src="libs/lib/angular-ui-router.min.js"></script>
     <script src="contacts.js"></script>
+    <div style="display:none">
+        <input id="image-upload" type="file" onchange="previewFile()">
+    </div>
     <div id="ContactManager" ng-app="ContactManager">
         <div ng-controller="ContactController as Contacts" class="container">
             <div class="well col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
@@ -50,7 +52,7 @@
                            ng-click="Contacts.expand(obj);"></i>
                     </div>
                 </div>
-                <div id="{{obj.Key}}" class="row user-infos">
+                <div id="{{obj.Key}}" class="row user-infos" style="display:none">
                     <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-xs-offset-0 col-sm-offset-0 col-md-offset-1 col-lg-offset-1">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
@@ -59,12 +61,14 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
-                                        <img class="img-circle"
+                                        <img
+                                                class="img-circle img-{{obj.Key}}"
                                                 src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
                                                 alt="User Pic">
                                     </div>
                                     <div class="col-xs-2 col-sm-2 hidden-md hidden-lg">
-                                        <img class="img-circle"
+                                        <img
+                                                class="img-circle img-{{obj.Key}}"
                                                 src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
                                                 alt="User Pic">
                                     </div>

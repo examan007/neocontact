@@ -11,39 +11,127 @@ function execute_ContactApp() {
         Contacts = this;
         Contacts.scope = $scope;
         Contacts.contactname = '';
+        Contacts.Debug = 0;
         Contacts.update = function () {
             Contacts.scope.$apply();
+        }
+        Contacts.getKey = function (obj) {
+            var isAlpha = function(ch) {
+                return /^[A-Z]$/i.test(ch);
+            }
+            return (obj.Name.replace(' ', '_'));
+        }
+        Contacts.exists = function (obj) {
+            var ret = false;
+            try {
+                if (typeof(Contacts.hashmap[Contacts.getKey(obj)]) === 'undefined') {} else {
+                    ret = true;
+                }
+            } catch (e) {}
+            return(ret);
         }
         Contacts.edit = function (obj) {
             console.log('edit obj=' + JSON.stringify(obj));
             obj.showclass = 'noshow';
             obj.editclass = 'show';
         }
+        Contacts.sendData = function (data, success, failure) {
+            if (Contacts.Debug < 1) { } else
+            try {
+                console.log('data=' + JSON.stringify(data));
+            } catch (e) {
+                console.log(e);
+            }
+            $.ajax({
+                url: '/private',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(data),
+                success: success,
+                error: function (xhr, textStatus, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log('xhr=' + JSON.stringify(err));
+                    failure('Error[ ' + JSON.stringify(err) + ']');
+                }
+            });
+        }
         Contacts.save = function (obj) {
-            console.log('save obj=' + JSON.stringify(obj));
-            obj.showclass = 'show';
-            obj.editclass = 'noshow';
+            obj.operation = 'save';
+            Contacts.sendData(obj, function (data) {
+                console.log('sendData response=' + JSON.stringify(data));
+                if (data.status === 'Error') {
+                    alert(data.message);
+                } else {
+                    console.log('save obj=' + JSON.stringify(obj));
+                    obj.showclass = 'show';
+                    obj.editclass = 'noshow';
+                }
+                Contacts.update();
+            }, function (msg) {
+                alert(msg);
+            });
         }
         Contacts.remove = function (obj) {
             console.log('remove obj=' + JSON.stringify(obj));
+            obj.operation = 'remove';
+            Contacts.sendData(obj, function (data) {
+                console.log('sendData response=' + JSON.stringify(data));
+                if (data.status === 'Error') {
+                    alert(data.message);
+                } else {
+                    console.log('remove post obj=' + JSON.stringify(obj));
+                    for (var i = 0; i < Contacts.objects.length; i++) {
+                        if (Contacts.objects[i].Key === obj.Key) {
+                            Contacts.removeFromHashMap(obj);
+                            Contacts.objects.splice(i, 1);
+                            break;
+                        }
+                    }
+                    Contacts.update();
+                }
+            }, function (msg) {
+                alert(msg);
+            });
         }
         Contacts.upload = function (obj) {
             console.log('upload obj=' + JSON.stringify(obj));
+            eventFire(document.getElementById('image-upload'), 'click');
         }
         Contacts.create = function () {
             console.log('create obj=[' + JSON.stringify(Contacts.contactname) + ']');
-            if (Contacts.contactname.length <= 0) { } else {
-                var obj = {
-                    Name: Contacts.contactname,
-                    SmallImage: 'images/nouserpic-50.png',
-                    LargeImage: 'images/nouserpic-225.png',
-                    showclass: 'noshow',
-                    editclass: 'show',
-                    direction: 'up'
-                };
-                if (addToHashMap(obj) == true) {
-                    Contacts.objects.unshift(obj);
-                }
+            var obj = {
+                Name: Contacts.contactname,
+                SmallImage: 'images/nouserpic-50.png',
+                LargeImage: 'images/nouserpic-225.png',
+                showclass: 'noshow',
+                editclass: 'show',
+                direction: 'up',
+                operation: 'create'
+            };
+            obj.Key = Contacts.getKey(obj);
+            if (Contacts.contactname.length <= 0) {
+                alert('Name must be entered!');
+            } else
+            if (Contacts.exists(obj) == true) {
+                alert('Name already exists!');
+            } else {
+                Contacts.sendData(obj, function (data) {
+                    console.log('sendData response=' + JSON.stringify(data));
+                    if (data.status === 'Error') {
+                        alert(data.message);
+                    } else
+                    if (Contacts.addToHashMap(obj) == true) {
+                        Contacts.objects.unshift(obj);
+                        Contacts.update();
+                        try {
+                            $('#' + obj.Key).show();
+                        } catch (e) {}
+                    } else {
+                        alert('Error, unable to save to local hash map!');
+                    }
+                }, function (msg) {
+                    alert(msg);
+                });
             }
         }
         Contacts.search = function () {
@@ -101,52 +189,25 @@ function execute_ContactApp() {
             label: 'Role level'
         }
         ];
-        Contacts.objects = [
-        {
-            Name: "James Hayes",
-            Phone: "416-575-7301",
-            Address: "Rathburn Road West",
-            Email: "james.hayes@neolation.com",
-            SmallImage: "images/IMG_20160729_095132.jpg",
-            LargeImage: "images/IMG_20160729_095132.jpg",
-            HomeDir: '/home/contactone',
-            Location: "E502",
-            UserTitle: "Full stack developer",
-            UserLevel: "Red"
-        },
-        {
-            Name: "Contact Two",
-            Phone: "555-555-5555",
-            Address: "1 Yonge Street",
-            Email: "contact.one@gmail.com",
-            SmallImage: 'images/nouserpic-50.png',
-            LargeImage: 'images/nouserpic-225.png',
-            HomeDir: "/home/dev",
-            Location: "E501",
-            UserTitle: "Developer",
-            UserLevel: "White"
-        }];
-        Contacts.objects.forEach( function (obj) {
-            obj.editclass = 'noshow';
-            obj.direction = 'down';
-        });
+        Contacts.objects = [];
         Contacts.hashmap = [];
-        function addToHashMap(obj) {
+        Contacts.addToHashMap = function (obj) {
             var ret = false;
-            var isAlpha = function(ch){
-                return /^[A-Z]$/i.test(ch);
-            }
-            obj.Key = obj.Name.replace(' ', '_');
-            if (typeof(Contacts.hashmap[obj.Key]) === 'undefined') {
+            if (Contacts.exists(obj) == true) {
+            } else {
+                obj.Key = Contacts.getKey(obj);
                 Contacts.hashmap[obj.Key] = obj;
                 ret = true;
             }
             return (ret);
         }
-
-        Contacts.objects.forEach( function (obj) {
-            addToHashMap(obj);
-        });
+        Contacts.removeFromHashMap = function (obj) {
+            try {
+                delete (Contacts.hashmap[obj.Key]);
+            } catch (e) {
+                console.log('remove' + e.toString());
+            }
+        }
     }]);
 }
 
@@ -155,13 +216,19 @@ function showAttrs() {
     Contacts.show($(this));
 }
 
-$(document).ready(function() {
-    var panels = $('.user-infos');
-    var panelsButton = $('.dropdown-user');
-    panels.hide();
+function hideAllPanels() {
+    var panels = document.getElementsByClassName('user-infos');
+    for (var i = 0; i < panels.length; i++) {
+        $(panels[i]).hide();
+    }
+}
 
+$(document).ready(function() {
+    hideAllPanels();
+
+    //var panelsButton = $('.dropdown-user');
     //Click dropdown
-    panelsButton.click(showAttrs);
+    //panelsButton.click(showAttrs);
 
     $('[data-toggle="tooltip"]').tooltip();
 
@@ -169,12 +236,42 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
-    window.setTimeout(initImages, 0);
+    window.setTimeout(initContacts, 0);
 
 });
 
+function initContacts() {
+    Contacts.sendData({
+        operation: 'retrieve'
+    }, function (data) {
+        //console.log(JSON.stringify(data));
+        Contacts.objects = data;
+        Contacts.objects.forEach( function (obj) {
+            obj.editclass = 'noshow';
+            obj.showclass = 'show';
+            obj.direction = 'down';
+            delete (obj['$$hashKey']);
+            Contacts.addToHashMap(obj);
+        });
+        Contacts.update();
+        window.setTimeout(initImages, 0);
+    }, function (err) {
+        //alert('Unable to retrieve contacts; ' + err);
+        window.setTimeout(initContacts, 2000);
+    });
+}
 function initImages() {
     console.log('initImages ... z');
+    Contacts.objects.forEach( function (obj) {
+        try {
+            var tag = '#' + obj.Key;
+            console.log(tag);
+            $(tag).hide();
+
+        } catch (e) {
+            console.log(e.toString());
+        }
+    });
     var i = 0;
     try {
         test(document.getElementById('ContactManager'));
@@ -207,4 +304,25 @@ function initImages() {
     }
 }
 
-// window.onload = init;
+ function previewFile(){
+       //var preview = document.querySelector('.img-' + obj.Key); //selects the query named img
+       //var file    = document.querySelector('input[type=file]').files[0]; //sames as here
+       var reader  = new FileReader();
+
+       reader.onloadend = function () {
+           //preview.src = reader.result;
+       }
+        console.log('previewFile()');
+  }
+
+  previewFile();  //calls the function named previewFi
+
+function eventFire(el, etype){
+  if (el.fireEvent) {
+    el.fireEvent('on' + etype);
+  } else {
+    var evObj = document.createEvent('Events');
+    evObj.initEvent(etype, true, false);
+    el.dispatchEvent(evObj);
+  }
+}
