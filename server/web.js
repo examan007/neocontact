@@ -3,6 +3,10 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 var app = express();
 try {
+    var fs = require('fs');
+    fs.mkdir('data');
+} catch (e) {}
+try {
     //app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.text());
     app.use(bodyParser.json());
