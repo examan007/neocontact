@@ -83,7 +83,7 @@ dl {
 .summary-table {
     overflow:hidden;
     white-space:nowrap;
-    table-layout:fixed";
+    table-layout:fixed;
 }
 
 .dropdown-user {
