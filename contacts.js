@@ -186,6 +186,7 @@ function execute_ContactApp() {
         }
         Contacts.search = function () {
             console.log('search obj=[' + JSON.stringify(Contacts.contactname) + ']');
+            alert('Search is not implemented; this would allow specific contact selection from the URI as well.')
         }
         Contacts.showWithKey = function (dataFor) {
             var idFor = $(dataFor);
@@ -368,19 +369,20 @@ function readSingleFile(element) {
     var treader = new FileReader();
     function onload (key, reader) {
         return (function(e) {
+            var maxsize = 64000;
+            var size = maxsize;
             var obj = Contacts.hashmap[key];
             var contents = new Uint8Array(reader.result); //btoa(reader.result);
             console.log('contents.length=[' + contents.length + ']');
             if (typeof(obj) === 'undefined') {
                 alert('Contact key is undefined!');
             } else 
-            if (0) { //contents.length > 164000 * 2) {
-                alert('Image is too large to save!');
+            if (contents.length > maxsize) {
+                alert('Image is too large to save! maximum size is [' + maxsize + ']');
             } else {
                 obj.ProfileImage = {
                 }
                 obj.ProfileImage.contents = [];
-                var size = 10000;
                 for (var i = 0; i < contents.length; i = i + size) {
                     if (contents.length - i < size) {
                         size = contents.length - i;

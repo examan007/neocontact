@@ -42,8 +42,16 @@
                                 alt="User Pic">
                     </div>
                     <div class="col-xs-8 col-sm-9 col-md-10 col-lg-10">
-                        <strong>{{obj.Name}}</strong><br>
-                        <span class="text-muted">User level: {{obj.UserLevel}}</span>
+                        <table class="summary-table">
+                            <tr>
+                                <td>
+                                    <strong>{{obj.Name}}</strong>
+                                </td>
+                                <td ng-repeat="temp in Contacts.template">
+                                    <span class="text-muted">&nbsp;{{obj[temp.name]}}</span>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                     <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 dropdown-user"">
                         <i class="glyphicon glyphicon-chevron-{{obj.direction}} text-muted"
