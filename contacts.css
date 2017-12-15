@@ -6,16 +6,25 @@
     width: 100%;
     padding-top: 3px;
     padding-bottom: 0px;
+    padding-left: 3px;
+    padding-left: 3px;
     margin: 3px;
+    overflow:hidden;
 }
 
 .img-thumb {
     max-height: 30px;
+    float: left;
 }
 
 .img-circle {
     max-width: 100px;
 }
+
+.img-wrap {
+    padding: 0px;
+}
+
 .row {
     margin: 0px;
     padding: 0px;
@@ -54,11 +63,21 @@
 }
 
 .attr-list-device {
+    padding-top: 0px;
     float: right;
 }
 
+.attr-name-device {
+    padding-top: 80px;
+}
+
 .attr-list-tablet {
-    float: left;
+    padding-left: 100px;
+    float: right;
+}
+
+.attr-table-wrap {
+    padding: 0px;
 }
 
 dl {
@@ -84,6 +103,7 @@ dl {
     overflow:hidden;
     white-space:nowrap;
     table-layout:fixed;
+    margin-top: 10px;
 }
 
 .dropdown-user {
