@@ -16,9 +16,6 @@ function execute_ContactApp() {
             Contacts.scope.$apply();
         }
         Contacts.getKey = function (obj) {
-            var isAlpha = function(ch) {
-                return /^[A-Z]$/i.test(ch);
-            }
             return (obj.Name.replace(' ', '_'));
         }
         Contacts.exists = function (obj) {
@@ -32,8 +29,8 @@ function execute_ContactApp() {
         }
         Contacts.edit = function (obj) {
             console.log('edit obj=' + JSON.stringify(obj));
-            obj.showclass = 'noshow';
-            obj.editclass = 'show';
+            obj.editclass = 'noshow';
+            toggleEdit(obj);
         }
         Contacts.sendData = function (data, success, failure) {
             if (Contacts.Debug < 1) { } else
@@ -55,16 +52,62 @@ function execute_ContactApp() {
                 }
             });
         }
+        Contacts.sendImage = function (data, success, failure) {
+            if (Contacts.Debug < 1) { } else
+            try {
+                console.log('data=' + JSON.stringify(data));
+            } catch (e) {
+                console.log(e);
+            }
+            $.ajax({ 
+                url: '/images',
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                success: success,
+                error: function (xhr, textStatus, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log('xhr=' + JSON.stringify(err));
+                    failure('Error[ ' + JSON.stringify(err) + ']');
+                }
+            });
+        }
         Contacts.save = function (obj) {
             obj.operation = 'save';
+            var image = obj.ProfileImage;
+            if (typeof(image) === 'undefined') {} else {
+                delete (obj.ProfileImage)
+                image.filename = 'data/' + obj.Key + '.' + (new Date()).getTime() + '.jpg';
+                obj.LargeImage = image.filename;
+                obj.SmallImage = image.filename;
+                sendFrags(image)();
+                function sendFrags (image) {
+                    return (function () {
+                        var frag = image.contents.pop();
+                        if (frag == null) {} else {
+                            Contacts.sendImage({
+                                    contents: [frag],
+                                    filename: image.filename
+                                }, sendFrags({
+                                    contents: image.contents,
+                                    filename: image.filename
+                                }),
+                                function (msg) {
+                                    alert(msg);
+                                }
+                            );
+                        }
+                    });
+                }
+            }
             Contacts.sendData(obj, function (data) {
                 console.log('sendData response=' + JSON.stringify(data));
                 if (data.status === 'Error') {
                     alert(data.message);
                 } else {
                     console.log('save obj=' + JSON.stringify(obj));
-                    obj.showclass = 'show';
-                    obj.editclass = 'noshow';
+                    obj.editclass = 'show';
+                    toggleEdit(obj);
                 }
                 Contacts.update();
             }, function (msg) {
@@ -72,6 +115,7 @@ function execute_ContactApp() {
             });
         }
         Contacts.remove = function (obj) {
+            alert('Are you sure? undo is not implemented; close browser to prevent removal!');
             console.log('remove obj=' + JSON.stringify(obj));
             obj.operation = 'remove';
             Contacts.sendData(obj, function (data) {
@@ -94,8 +138,14 @@ function execute_ContactApp() {
             });
         }
         Contacts.upload = function (obj) {
-            console.log('upload obj=' + JSON.stringify(obj));
-            eventFire(document.getElementById('image-upload'), 'click');
+            //console.log('upload obj=' + JSON.stringify(obj));
+            var tag = 'upload-' + obj.Key;
+            var element = document.getElementById(tag);
+            if (element == null) {
+                alert('Cannot find ' + tag);
+            } else {
+                $(element).click();
+            }
         }
         Contacts.create = function () {
             console.log('create obj=[' + JSON.stringify(Contacts.contactname) + ']');
@@ -103,11 +153,11 @@ function execute_ContactApp() {
                 Name: Contacts.contactname,
                 SmallImage: 'images/nouserpic-50.png',
                 LargeImage: 'images/nouserpic-225.png',
-                showclass: 'noshow',
-                editclass: 'show',
+                editclass: 'noshow',
                 direction: 'up',
                 operation: 'create'
             };
+            toggleEdit(obj);
             obj.Key = Contacts.getKey(obj);
             if (Contacts.contactname.length <= 0) {
                 alert('Name must be entered!');
@@ -211,33 +261,8 @@ function execute_ContactApp() {
     }]);
 }
 
-function showAttrs() {
-    //get data-for attribute
-    Contacts.show($(this));
-}
-
-function hideAllPanels() {
-    var panels = document.getElementsByClassName('user-infos');
-    for (var i = 0; i < panels.length; i++) {
-        $(panels[i]).hide();
-    }
-}
-
 $(document).ready(function() {
-    hideAllPanels();
-
-    //var panelsButton = $('.dropdown-user');
-    //Click dropdown
-    //panelsButton.click(showAttrs);
-
-    $('[data-toggle="tooltip"]').tooltip();
-
-    $('button').click(function(e) {
-        e.preventDefault();
-    });
-
     window.setTimeout(initContacts, 0);
-
 });
 
 function initContacts() {
@@ -247,10 +272,10 @@ function initContacts() {
         //console.log(JSON.stringify(data));
         Contacts.objects = data;
         Contacts.objects.forEach( function (obj) {
-            obj.editclass = 'noshow';
-            obj.showclass = 'show';
+            obj.editclass = 'show';
             obj.direction = 'down';
             delete (obj['$$hashKey']);
+            toggleEdit(obj);
             Contacts.addToHashMap(obj);
         });
         Contacts.update();
@@ -262,6 +287,12 @@ function initContacts() {
 }
 function initImages() {
     console.log('initImages ... z');
+    $('[data-toggle="tooltip"]').tooltip();
+
+    $('button').click(function(e) {
+        e.preventDefault();
+    });
+
     Contacts.objects.forEach( function (obj) {
         try {
             var tag = '#' + obj.Key;
@@ -304,25 +335,91 @@ function initImages() {
     }
 }
 
- function previewFile(){
-       //var preview = document.querySelector('.img-' + obj.Key); //selects the query named img
-       //var file    = document.querySelector('input[type=file]').files[0]; //sames as here
-       var reader  = new FileReader();
+function toggleEdit(obj) {
+    try {
+        if (obj.editclass === 'show') {
+            obj.editclass = 'noshow';
+            obj.showclass = 'show';
+            obj.loadclass = 'invisible';
+        } else {
+            obj.editclass = 'show';
+            obj.showclass = 'noshow';
+            obj.loadclass = 'visible';
+        }
+    } catch (e) {
+        console.log('toggleEdit' + e.toString());
+    }
+}
 
-       reader.onloadend = function () {
-           //preview.src = reader.result;
-       }
-        console.log('previewFile()');
-  }
+function readSingleFile(element) {
+    console.log('readSingleFile;');
+    var file = element.files[0];
+    if (!file) {
+        return;
+    }
+    console.log('filename=[' + file + '] id=[' + element.id + ']');
+    var key = element.id.substr(element.id.indexOf('-') + 1);
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var contents = e.target.result;
+        displayContents(contents,key);
+    };
+    reader.readAsDataURL(file);
+    var treader = new FileReader();
+    function onload (key, reader) {
+        return (function(e) {
+            var obj = Contacts.hashmap[key];
+            var contents = new Uint8Array(reader.result); //btoa(reader.result);
+            console.log('contents.length=[' + contents.length + ']');
+            if (typeof(obj) === 'undefined') {
+                alert('Contact key is undefined!');
+            } else 
+            if (0) { //contents.length > 164000 * 2) {
+                alert('Image is too large to save!');
+            } else {
+                obj.ProfileImage = {
+                }
+                obj.ProfileImage.contents = [];
+                var size = 10000;
+                for (var i = 0; i < contents.length; i = i + size) {
+                    if (contents.length - i < size) {
+                        size = contents.length - i;
+                    }
+                    try {
+                        function bufferToBase64(buf) {
+                            var binstr = Array.prototype.map.call(buf, function (ch) {
+                                return String.fromCharCode(ch);
+                            }).join('');
+                            return btoa(binstr);
+                        }
+                        var arr = new Uint8Array(contents.slice(i, i + size));
+                        //var buffer = new Uint8Array(arr);
+                        var b64encoded = bufferToBase64(arr);
+                        obj.ProfileImage.contents.push(b64encoded);
+                        console.log('Fragment length=[' + size + '] encoded=[' + b64encoded.length + ']');
+                    } catch (e) {
+                        alert('Image NOT saved; ' + e.toString());
+                        delete (obj.ProfileImage);
+                        break;
+                    }
+                }
+            }
+        });
+    }
+    treader.onload = onload(key, treader);
+    //treader.readAsText(file);
+    //treader.readAsBinaryString(file);
+    treader.readAsArrayBuffer(file);
+}
 
-  previewFile();  //calls the function named previewFi
-
-function eventFire(el, etype){
-  if (el.fireEvent) {
-    el.fireEvent('on' + etype);
-  } else {
-    var evObj = document.createEvent('Events');
-    evObj.initEvent(etype, true, false);
-    el.dispatchEvent(evObj);
-  }
+function displayContents(contents, key) {
+    updatesrc('img-' + key);
+    function updatesrc(tag) {
+        var elements = document.getElementsByClassName(tag);
+        console.log('display; tag=[' + tag + '] len=[' + elements.length + ']'); // contents=[' + contents + ']');
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].setAttribute('src', contents);
+        }
+    }
+    Contacts.update();
 }

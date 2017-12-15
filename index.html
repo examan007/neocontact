@@ -7,6 +7,7 @@
     <title>Contacts</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link rel="icon" href="/images/newneoz.png?7777" />
     <link href="contacts.css" rel="stylesheet">
 </head>
 <body>
@@ -15,9 +16,6 @@
     <script src="libs/lib/angular.min.js"></script>
     <script src="libs/lib/angular-ui-router.min.js"></script>
     <script src="contacts.js"></script>
-    <div style="display:none">
-        <input id="image-upload" type="file" onchange="previewFile()">
-    </div>
     <div id="ContactManager" ng-app="ContactManager">
         <div ng-controller="ContactController as Contacts" class="container">
             <div class="well col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
@@ -39,7 +37,7 @@
             <div ng-repeat="obj in Contacts.objects" class="well col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
                 <div class="row user-row">
                     <div class="col-xs-3 col-sm-2 col-md-1 col-lg-1">
-                        <img class="img-thumb"
+                        <img class="img-thumb img-{{obj.Key}}"
                                 src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="SmallImage"
                                 alt="User Pic">
                     </div>
@@ -64,13 +62,13 @@
                                         <img
                                                 class="img-circle img-{{obj.Key}}"
                                                 src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
-                                                alt="User Pic">
+                                                alt="User Pic"/>
                                     </div>
                                     <div class="col-xs-2 col-sm-2 hidden-md hidden-lg">
                                         <img
                                                 class="img-circle img-{{obj.Key}}"
                                                 src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
-                                                alt="User Pic">
+                                                alt="User Pic"/>
                                     </div>
                                     <div class="col-xs-10 hidden-sm hidden-md hidden-lg">
                                         <strong>{{obj.Name}}</strong><br>
@@ -117,7 +115,9 @@
                                 </div>
                             </div>
                             <div class="panel-footer">
-                                <button class="btn btn-sm btn-primary" type="button"
+                                <input id="upload-{{obj.Key}}" type="file" style="visibility:hidden"
+                                       onchange="readSingleFile(this);" />
+                                <button class="btn btn-sm btn-primary {{obj.loadclass}}" type="button"
                                         ng-click="Contacts.upload(obj);"
                                         data-toggle="tooltip"
                                         data-original-title="Update profile picture">
@@ -160,5 +160,7 @@
             </div>
         </div>
     </div>
+    <img id="file-content"
+     src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="/>
 </body>
 </html>

@@ -1,22 +1,67 @@
 var express = require('express')
 var bodyParser = require('body-parser');
 var cors = require('cors');
-
 var app = express();
-var Governor = require('../server/governor.js').getGovernor();
+try {
+    //app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.text());
+    app.use(bodyParser.json());
 
-//app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.text());
-app.use(bodyParser.json());
+    app.use(express.json());       // to support JSON-encoded bodies
+    app.use(express.urlencoded({ extended: true })); // to support URL-encoded bodies
 
-app.use(express.json());       // to support JSON-encoded bodies
-app.use(express.urlencoded({ extended: true })); // to support URL-encoded bodies
-
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+    app.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        if (0) { //err instanceof SyntaxError) {
+            error(res)(error.toString());
+        } else {
+            next();
+        }
+    });
+} catch (e) {
+    console.log('app=' + e.toString());
+}
+function success (res) {
+    return (function () {
+        res.writeHead(200, {
+            'Content-Type': 'text/html'
+        });
+        var obj = {
+            result: "true",
+            message: "done OK!",
+            status: "Success"
+        }
+        msg = JSON.stringify(obj);
+        console.log('RESPONSE=[' + msg + ']');
+        res.end(msg);
+    });
+}
+function error (res) {
+    return (function (err) {
+        res.writeHead(200, {
+            'Content-Type': 'text/html'
+        });
+        var obj = {
+            result: "false",
+            message: err,
+            status: "Error"
+        }
+        msg = JSON.stringify(obj);
+        console.log('RESPONSE=[' + msg + ']');
+        res.end(msg);
+    });
+}
+function retrieve (res) {
+    return (function () {
+        res.writeHead(200, {
+            'Content-Type': 'text/html'
+        });
+        msg = JSON.stringify(app.Contacts);
+        console.log('RESPONSE=[' + msg + ']');
+        res.end(msg);
+    });
+}
 
 var arg = process.cwd();
 console.log('arg=[' + arg + ']');
@@ -53,6 +98,19 @@ app.saveContacts = function (obj, success, failure) {
             JSON.stringify(contacts).toString('utf-8'));
         fs.writeFileSync(app.BasePath + 'Contacts.json',
             JSON.stringify(obj).toString('utf-8'));
+        success();
+    } catch (e) {
+        console.log('save=' + e.toString());
+        failure(e.toString());
+    }
+}
+app.saveImage = function (filename, contents, success, failure) {
+    var fs = require('fs');
+    try {
+        for (var i = 0; i < contents.length; i++) {
+            var image = Buffer(contents[i], 'base64');
+            fs.appendFileSync(filename, image);
+        }
         success();
     } catch (e) {
         console.log('save=' + e.toString());
@@ -124,6 +182,11 @@ app.showRequest = function (req) {
     console.log('headers=' + JSON.stringify(req.headers));
     console.log('body=' + JSON.stringify(req.body));
 }
+app.post('/images', function (req, res){
+    //app.showRequest(req);
+    //app.saveImage(require('atob').atob(buffer), success(res), error(res));
+    app.saveImage(req.body.filename, req.body.contents, success(res), error(res));
+});
 app.post('/private', function (req, res){
     //app.showRequest(req);
     app.showRequest(req);
@@ -158,53 +221,8 @@ app.post('/private', function (req, res){
         return (entry[0]);
     }
     var entry = getBody(req.body);
-    if (Governor.checkSession(req) == false
-        &&
-        entry.operation !== 'retrieve') {
-        //return;
-    }
     var moment = require('moment');
     entry.create = moment().utc();
-    function success (res) {
-        return (function () {
-            res.writeHead(200, {
-                'Content-Type': 'text/html'
-            });
-            var obj = {
-                result: "true",
-                message: "done OK!",
-                status: "Success"
-            }
-            msg = JSON.stringify(obj);
-            console.log('RESPONSE=[' + msg + ']');
-            res.end(msg);
-        });
-    }
-    function error (res) {
-        return (function (err) {
-            res.writeHead(200, {
-                'Content-Type': 'text/html'
-            });
-            var obj = {
-                result: "false",
-                message: err,
-                status: "Error"
-            }
-            msg = JSON.stringify(obj);
-            console.log('RESPONSE=[' + msg + ']');
-            res.end(msg);
-        });
-    }
-    function retrieve (res) {
-        return (function () {
-            res.writeHead(200, {
-                'Content-Type': 'text/html'
-            });
-            msg = JSON.stringify(app.Contacts);
-            console.log('RESPONSE=[' + msg + ']');
-            res.end(msg);
-        });
-    }
     if (typeof(entry['operation']) === 'undefined') {
         error(res)('Error, undefined operation!');
     } else
@@ -223,8 +241,9 @@ app.post('/private', function (req, res){
         error(res)('Error, operation not implemented!');
     }
 });
-app.listen(3030, function () {
-  console.log("Started on PORT 3030");
+app.ListenPort = 3333;
+app.listen(parseInt(app.ListenPort), function () {
+  console.log('Started on PORT ' + app.ListenPort);
 });
 
 function init() {
@@ -235,7 +254,7 @@ function init() {
         });
 }
 var corsOptions = {
-  origin: 'http://localhost:3030',
+  origin: 'http://localhost:' + app.ListenPort,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
 }
 app.use(cors());

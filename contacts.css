@@ -73,6 +73,14 @@ dl {
     display: none;
 }
 
+.visible {
+    visibility:  visible;
+}
+.invisible {
+    visibility: hidden;
+}
+
+
 .dropdown-user {
     padding: 0;
     margin: 0;
