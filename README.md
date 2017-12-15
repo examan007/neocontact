@@ -11,4 +11,9 @@ Simple contact manager based on Bootstrap, JQuery, Angular, Node, and  Express.
  4. `node server/web`
  5. Browse to `http:localhost:3333`
 
+## Known Issues:
 
+ 1. Profile images greater than ~64K are not supported.
+ 2. Undo is not implemented; this means remove is a bit clunky.
+ 3. Search is not implemented; this means specific contact selection is difficult.
+ 4. Support for many contacts is designed but not implemented; this is good for under 100 (not tested).

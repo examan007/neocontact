@@ -174,6 +174,7 @@ function execute_ContactApp() {
                         Contacts.objects.unshift(obj);
                         Contacts.update();
                         try {
+                            $('[data-toggle="tooltip"]').tooltip();
                             $('#' + obj.Key).show();
                         } catch (e) {}
                     } else {
