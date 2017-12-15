@@ -9,6 +9,6 @@ Simple contact manager based on Bootstrap, JQuery, Angular, Node, and  Express.
  4. `cd <working directory>`
  5. `npm-install-all`
  4. `node server/web`
- 5. Browse to `http:localhost:3030`
+ 5. Browse to `http:localhost:3333`
 
 
