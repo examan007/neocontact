@@ -46,7 +46,10 @@ function execute_ContactApp() {
                 data: JSON.stringify(data),
                 success: success,
                 error: function (xhr, textStatus, error) {
-                    var err = eval("(" + xhr.responseText + ")");
+                    var err = {};
+                    try {
+                        err = eval("(" + xhr.responseText + ")");
+                    } catch (e) {}
                     console.log('xhr=' + JSON.stringify(err));
                     failure('Error[ ' + JSON.stringify(err) + ']');
                 }
@@ -283,7 +286,7 @@ function initContacts() {
         Contacts.update();
         window.setTimeout(initImages, 0);
     }, function (err) {
-        //alert('Unable to retrieve contacts; ' + err);
+        alert('Unable to retrieve contacts; ' + err);
         window.setTimeout(initContacts, 2000);
     });
 }

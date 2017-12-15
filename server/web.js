@@ -4,7 +4,7 @@ var cors = require('cors');
 var app = express();
 try {
     var fs = require('fs');
-    fs.mkdir('data');
+    fs.mkdir('data', function () {});
 } catch (e) {}
 try {
     //app.use(bodyParser.urlencoded({ extended: false }));
@@ -110,6 +110,7 @@ app.saveContacts = function (obj, success, failure) {
 }
 app.saveImage = function (filename, contents, success, failure) {
     var fs = require('fs');
+    console.log('filename=' + filename);
     try {
         for (var i = 0; i < contents.length; i++) {
             var image = Buffer(contents[i], 'base64');
@@ -187,9 +188,15 @@ app.showRequest = function (req) {
     console.log('body=' + JSON.stringify(req.body));
 }
 app.post('/images', function (req, res){
+    console.log('url=' + JSON.stringify(req.url));
     //app.showRequest(req);
     //app.saveImage(require('atob').atob(buffer), success(res), error(res));
-    app.saveImage(req.body.filename, req.body.contents, success(res), error(res));
+    var filename = req.body.filename;
+    var idx = 0;
+    if ((idx = filename.lastIndexOf('/')) >= 0) {
+        filename = app.BasePath + filename.substr(idx + 1);
+    }
+    app.saveImage(filename, req.body.contents, success(res), error(res));
 });
 app.post('/private', function (req, res){
     //app.showRequest(req);
