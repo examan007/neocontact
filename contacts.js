@@ -374,7 +374,7 @@ function readSingleFile(element) {
     function onload (key, reader) {
         return (function(e) {
             var maxsize = 64000;
-            var size = maxsize;
+            var size = 64000;
             var obj = Contacts.hashmap[key];
             var contents = new Uint8Array(reader.result); //btoa(reader.result);
             console.log('contents.length=[' + contents.length + ']');
@@ -398,7 +398,12 @@ function readSingleFile(element) {
                             }).join('');
                             return btoa(binstr);
                         }
-                        var arr = new Uint8Array(contents.slice(i, i + size));
+                        var arr = null;
+                        try {
+                            arr = new Uint8Array(contents.slice(i, i + size));
+                        } catch (e) {
+                            arr = new Uint8Array(contents);
+                        }
                         //var buffer = new Uint8Array(arr);
                         var b64encoded = bufferToBase64(arr);
                         obj.ProfileImage.contents.push(b64encoded);
