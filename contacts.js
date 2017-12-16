@@ -16,7 +16,7 @@ function execute_ContactApp() {
             Contacts.scope.$apply();
         }
         Contacts.getKey = function (obj) {
-            return (obj.Name.replace(' ', '_'));
+            return (obj.Name.replace(/\W+/g, "_"));
         }
         Contacts.exists = function (obj) {
             var ret = false;
