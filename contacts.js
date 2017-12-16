@@ -373,8 +373,8 @@ function readSingleFile(element) {
     var treader = new FileReader();
     function onload (key, reader) {
         return (function(e) {
-            var maxsize = 64000;
-            var size = 64000;
+            var maxsize = 26214400;
+            var size = 26214400;
             var obj = Contacts.hashmap[key];
             var contents = new Uint8Array(reader.result); //btoa(reader.result);
             console.log('contents.length=[' + contents.length + ']');

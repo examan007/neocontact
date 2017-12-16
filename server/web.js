@@ -8,11 +8,16 @@ try {
 } catch (e) {}
 try {
     //app.use(bodyParser.urlencoded({ extended: false }));
+    var bodyParser = require('body-parser');
+    app.use(bodyParser.json({limit: '50mb'}));
+    app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
     app.use(bodyParser.text());
-    app.use(bodyParser.json());
+//    app.use(bodyParser.json());
 
-    app.use(express.json());       // to support JSON-encoded bodies
-    app.use(express.urlencoded({ extended: true })); // to support URL-encoded bodies
+    app.use(express.json({limit: '50mb'}));
+    app.use(express.urlencoded({limit: '50mb'}));
+//    app.use(express.json());       // to support JSON-encoded bodies
+//    app.use(express.urlencoded({ extended: true })); // to support URL-encoded bodies
 
     app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
