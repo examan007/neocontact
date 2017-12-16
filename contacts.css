@@ -13,6 +13,8 @@
 }
 
 .img-thumb {
+    padding-top: 8px;
+    padding-left: 8px;
     max-height: 30px;
     float: left;
 }
@@ -103,10 +105,19 @@ dl {
     overflow:hidden;
     white-space:nowrap;
     table-layout:fixed;
-    margin-top: 10px;
+    padding: 0px;
+    margin: 0px;
 }
 
 .dropdown-user {
     padding: 0;
     margin: 0;
+}
+
+.col-xs-3 {
+    width: 15%;
+}
+
+.text-muted {
+    font-size:x-small;
 }
