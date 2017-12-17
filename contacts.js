@@ -268,6 +268,7 @@ function execute_ContactApp() {
 
 $(document).ready(function() {
     window.setTimeout(initContacts, 0);
+    $('[rel=tooltip]').tooltip({ trigger: "hover" });
 });
 
 function initContacts() {

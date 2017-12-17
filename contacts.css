@@ -98,9 +98,6 @@
     padding-left: 20px;
 }
 
-.btn {
-    float: right;
-}
 
 dl {
     margin-bottom: 0px;
@@ -169,4 +166,8 @@ dl {
 .row-control  {
     position:absolute;
     right: 30px;
+}
+
+.pull-left {
+    padding-left: 8px;
 }
