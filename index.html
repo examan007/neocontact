@@ -19,9 +19,11 @@
     <div id="ContactManager" ng-app="ContactManager">
         <div ng-controller="ContactController as Contacts" class="container">
             <div class="well col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
-                <div class="row user-row">
-                    <span class="pull-right">
+                <div class="row user-row user-row-wrap">
+                    <span class="pull-left">
                         Contact Name
+                    </span>
+                    <span class="pull-right">
                         <input type="text" ng-model="Contacts.contactname" />
                         <button class="btn btn-sm btn-primary" type="button"
                                 ng-click="Contacts.create();">
@@ -36,47 +38,109 @@
             </div>
             <div ng-repeat="obj in Contacts.objects" class="well col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
                 <div class="row user-row">
-                    <div class="img-wrap col-xs-3 col-sm-2 col-md-1 col-lg-1">
-                        <img class="img-thumb img-{{obj.Key}}"
-                                src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="SmallImage"
-                                alt="User Pic">
-                    </div>
-                    <div class="attr-table-wrap col-xs-8 col-sm-9 col-md-10 col-lg-10">
-                        <table class="summary-table">
-                            <tr>
-                                <td colspan="{{Contacts.template.length}}">
-                                    <strong>{{obj.Name}}</strong>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td ng-repeat="temp in Contacts.template">
-                                    <span class="text-muted">&nbsp;{{obj[temp.name]}}</span>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 dropdown-user"">
-                        <i class="glyphicon glyphicon-chevron-{{obj.direction}} text-muted"
-                           ng-click="Contacts.expand(obj);"></i>
-                    </div>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="img-wrap">
+                                    <img class="img-attr-thumb img-circle img-{{obj.Key}}"
+                                         src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="SmallImage"
+                                         alt="User Pic">
+                                </div>
+                                <div class="row-control">
+                                    <span class="row-complete">
+                                        <i class="glyphicon glyphicon-chevron-{{obj.direction}} text-muted"
+                                           ng-click="Contacts.expand(obj);"></i>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="attr-table-wrap">
+                                    <table class="summary-table">
+                                        <tr>
+                                            <td colspan="{{Contacts.template.length}}">
+                                                <strong>{{obj.Name}}</strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td ng-repeat="temp in Contacts.template">
+                                                <span class="text-muted">&nbsp;{{obj[temp.name]}}</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
                 <div id="{{obj.Key}}" class="row user-infos" style="display:none">
                     <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-xs-offset-0 col-sm-offset-0 col-md-offset-1 col-lg-offset-1">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h3 class="panel-title">User information</h3>
+                                <span class="pull-right">
+                                    <table class="user-info">
+                                        <tr>
+                                            <td nowrap>
+                                                <div>
+                                                    <h3 class="panel-title">User information</h3>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input id="upload-{{obj.Key}}" type="file" style="visibility:hidden"
+                                                       onchange="readSingleFile(this);" />
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary {{obj.loadclass}}" type="button"
+                                                        ng-click="Contacts.upload(obj);"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Update profile picture">
+                                                    <i class="glyphicon glyphicon-upload"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                &nbsp;&nbsp;&nbsp;
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-warning {{obj.showclass}}" type="button"
+                                                        ng-click="Contacts.edit(obj);"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Edit this user">
+                                                    <i class="glyphicon glyphicon-edit"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary {{obj.editclass}}" type="button"
+                                                        ng-click="Contacts.save(obj);"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Save this user">
+                                                    <i class="glyphicon glyphicon-save"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                &nbsp;&nbsp;&nbsp;
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-danger" type="button"
+                                                        ng-click="Contacts.remove(obj);"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Remove this user">
+                                                    <i class="glyphicon glyphicon-remove"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </span>
                             </div>
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
                                         <img
-                                                class="img-circle img-{{obj.Key}}"
+                                                class="img-attr img-circle img-{{obj.Key}}"
                                                 src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
                                                 alt="User Pic"/>
                                     </div>
                                     <div class="col-xs-2 col-sm-2 hidden-md hidden-lg">
                                         <img
-                                                class="img-circle img-{{obj.Key}}"
+                                                class="img-attr img-circle img-{{obj.Key}}"
                                                 src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="LargeImage"
                                                 alt="User Pic"/>
                                     </div>
@@ -134,17 +198,20 @@
                                 </div>
                             </div>
                             <div class="panel-footer">
-                                <input id="upload-{{obj.Key}}" type="file" style="visibility:hidden"
-                                       onchange="readSingleFile(this);" />
-                                <button class="btn btn-sm btn-primary {{obj.loadclass}}" type="button"
-                                        ng-click="Contacts.upload(obj);"
-                                        data-toggle="tooltip"
-                                        data-original-title="Update profile picture">
-                                    <i class="glyphicon glyphicon-upload"></i>
-                                </button>
                                 <span class="pull-right">
                                     <table>
                                         <tr>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary {{obj.loadclass}}" type="button"
+                                                        ng-click="Contacts.upload(obj);"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Update profile picture">
+                                                    <i class="glyphicon glyphicon-upload"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                &nbsp;&nbsp;&nbsp;
+                                            </td>
                                             <td>
                                                 <button class="btn btn-sm btn-warning {{obj.showclass}}" type="button"
                                                         ng-click="Contacts.edit(obj);"

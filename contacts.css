@@ -4,11 +4,9 @@
 }
 .well {
     width: 100%;
+    padding: 0px;
     padding-top: 3px;
-    padding-bottom: 0px;
-    padding-left: 3px;
-    padding-left: 3px;
-    margin: 3px;
+    margin: 0px;
     overflow:hidden;
 }
 
@@ -27,14 +25,15 @@
 
 .img-wrap {
     padding: 0px;
+    padding-bottom: 12px;
 }
 
 .row {
     margin: 0px;
     padding: 0px;
 }
+
 .user-row {
-    margin-bottom: 4px;
 }
 
 .user-row-wrap {
@@ -44,9 +43,12 @@
     margin-bottom: 0;
 }
 
+.user-inf-wrap {
+    float: right;
+}
+
 .dropdown-user {
-    margin: 4px 0;
-    padding: 4px;
+    float: right;
 }
 
 .dropdown-user:hover {
@@ -54,6 +56,11 @@
 }
 
 .table-user-information {
+}
+
+.user-info {
+    padding: 0px;
+    margin: 0px;
 }
 
 .table-user-information > tbody > tr {
@@ -88,7 +95,11 @@
 }
 
 .attr-table-wrap {
-    padding: 0px;
+    padding-left: 20px;
+}
+
+.btn {
+    float: right;
 }
 
 dl {
@@ -141,4 +152,21 @@ dl {
 
 .label-fixed {
     font-size:1em;
+}
+
+.panel-footer {
+    height: 4em;
+}
+
+.panel-heading {
+    height: 4em;
+}
+.row-complete {
+    position:relative;
+    top: -40px;
+}
+
+.row-control  {
+    position:absolute;
+    right: 30px;
 }
