@@ -81,28 +81,37 @@
                                                 alt="User Pic"/>
                                     </div>
                                     <div class="attr-name-device col-xs-10 hidden-sm hidden-md hidden-lg">
-                                        <strong>{{obj.Name}}</strong><br>
+                                        <div class="attr-name-title">
+                                            <strong>{{obj.Name}}</strong><br>
+                                        </div>
                                         <ul class="attr-list-device">
                                             <li ng-repeat="temp in Contacts.template">
                                                 <dl>
-                                                    <dt>{{temp.label}}:</dt>
+                                                    <dt>
+                                                        <span  class="label-fixed">
+                                                        {{temp.label}}:    
+                                                         </span>
+                                                    </dt>
                                                     <dd>
-                                                        <div class="{{obj.editclass}}">
-                                                            <input type="text"
+                                                        <span class="{{obj.editclass}} input-fixed">
+                                                            <input 
+                                                                    type="text"
                                                                     name="{{obj.Name}}.{{temp.name}}"
                                                                     value="{{obj[temp.name]}}"
                                                                     ng-model="obj[temp.name]" />
-                                                        </div>
-                                                        <div class="{{obj.showclass}}">
+                                                        </span>
+                                                        <span class="{{obj.showclass}} attr-fixed">
                                                             {{obj[temp.name]}}
-                                                        </div>
+                                                        </span>
                                                     </dd>
                                                 </dl>
                                             </li>
                                         </ul>
                                     </div>
                                     <div class="col-md-9 col-lg-9 hidden-xs col-sm-9">
-                                        <strong>{{obj.Name}}</strong><br>
+                                        <div class="attr-name-title">
+                                            <strong>{{obj.Name}}</strong><br>
+                                        </div>
                                         <table class="table table-user-information">
                                             <tbody>
                                                 <tr ng-repeat="temp in Contacts.template">

@@ -65,17 +65,21 @@
 }
 
 .attr-list-device {
-    padding-top: 0px;
+    padding-top: 80px;
     float: right;
 }
 
 .attr-name-device {
-    padding-top: 80px;
+    padding-top: 0px;
 }
 
 .attr-list-tablet {
     padding-left: 100px;
     float: right;
+}
+
+.attr-name-title {
+    float:right;
 }
 
 .attr-table-wrap {
@@ -120,4 +124,16 @@ dl {
 
 .text-muted {
     font-size:x-small;
+}
+
+.input-fixed {
+    font-size:16px;
+}
+
+.attr-fixed {
+    font-size:16px;
+}
+
+.label-fixed {
+    font-size:1em;
 }
