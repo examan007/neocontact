@@ -76,7 +76,7 @@ function execute_ContactApp() {
             });
         }
         Contacts.save = function (obj) {
-            obj.operation = 'save';
+            obj.operation = 'update';
             var image = obj.ProfileImage;
             if (typeof(image) === 'undefined') {} else {
                 delete (obj.ProfileImage)
@@ -120,7 +120,7 @@ function execute_ContactApp() {
         Contacts.remove = function (obj) {
             alert('Are you sure? undo is not implemented; close browser to prevent removal!');
             console.log('remove obj=' + JSON.stringify(obj));
-            obj.operation = 'remove';
+            obj.operation = 'delete';
             Contacts.sendData(obj, function (data) {
                 console.log('sendData response=' + JSON.stringify(data));
                 if (data.status === 'Error') {

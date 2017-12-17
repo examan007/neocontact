@@ -248,10 +248,10 @@ app.post('/private', function (req, res){
     if (entry.operation === 'retrieve') {
         retrieve(res)();
     } else 
-    if (entry.operation === 'save') {
+    if (entry.operation === 'update') {
         app.updateContact(entry, success(res), error(res));
     } else
-    if (entry.operation === 'remove') {
+    if (entry.operation === 'delete') {
         app.removeContact(entry, success(res), error(res));
     } else {
         error(res)('Error, operation not implemented!');
