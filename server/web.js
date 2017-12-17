@@ -7,26 +7,18 @@ try {
     fs.mkdir('data', function () {});
 } catch (e) {}
 try {
-    //app.use(bodyParser.urlencoded({ extended: false }));
     var bodyParser = require('body-parser');
     app.use(bodyParser.json({limit: '50mb'}));
     app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
     app.use(bodyParser.text());
-//    app.use(bodyParser.json());
 
     app.use(express.json({limit: '50mb'}));
     app.use(express.urlencoded({limit: '50mb'}));
-//    app.use(express.json());       // to support JSON-encoded bodies
-//    app.use(express.urlencoded({ extended: true })); // to support URL-encoded bodies
 
     app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        if (0) { //err instanceof SyntaxError) {
-            error(res)(error.toString());
-        } else {
-            next();
-        }
+        next();
     });
 } catch (e) {
     console.log('app=' + e.toString());
@@ -71,7 +63,6 @@ function retrieve (res) {
         res.end(msg);
     });
 }
-
 var arg = process.cwd();
 console.log('arg=[' + arg + ']');
 if (typeof(arg) === 'undefined') {
@@ -80,7 +71,6 @@ if (typeof(arg) === 'undefined') {
     app.CurrentDirectory = arg + '/';
 }
 console.log('app.CurrentDirectory=[' + app.CurrentDirectory + ']');
-
 app.BasePath = 'data/';
 app.loadContacts = function () {
     var text = '[]';
@@ -195,7 +185,6 @@ app.showRequest = function (req) {
 app.post('/images', function (req, res){
     console.log('url=' + JSON.stringify(req.url));
     //app.showRequest(req);
-    //app.saveImage(require('atob').atob(buffer), success(res), error(res));
     var filename = req.body.filename;
     var idx = 0;
     if ((idx = filename.lastIndexOf('/')) >= 0) {
@@ -206,27 +195,6 @@ app.post('/images', function (req, res){
 app.post('/private', function (req, res){
     //app.showRequest(req);
     app.showRequest(req);
-    function getEntry(attrs) {
-        var entry = new Object();
-        for (var i = 0; i < attrs.length; i++) {
-            console.log('objz=' + JSON.stringify(attrs[i]));
-            var key = (attrs[i])['key'];
-            var val = (attrs[i])['value'];
-            var type = (attrs[i])['type'];
-            if (typeof(type) === 'undefined') {
-                entry[key] = val;
-            } else
-            if (type.indexOf('array') < 0) {
-                entry[key] = val;
-            } else 
-            if (typeof(entry[key]) === 'undefined') {
-                entry[key] = [val];
-            } else {
-                entry[key].push(val);
-            }
-        }
-        return (entry);
-    }
     function getBody(body) {
         var entry = new Object();
         for(var key in body) {
