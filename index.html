@@ -40,52 +40,39 @@
             </div>
             <div ng-repeat="obj in Contacts.objects" class="well col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
                 <div class="row user-row">
-                    <table>
-                        <tr>
-                            <td>
-                                <div class="img-wrap">
-                                    <img class="img-attr-thumb img-circle img-{{obj.Key}}"
-                                         src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="SmallImage"
-                                         alt="User Pic">
-                                </div>
-                                <div class="row-control">
-                                    <span class="row-complete">
-                                        <i class="glyphicon glyphicon-chevron-{{obj.direction}} text-muted"
-                                           ng-click="Contacts.expand(obj);"></i>
-                                    </span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="attr-table-wrap">
-                                    <table class="summary-table">
-                                        <tr>
-                                            <td colspan="{{Contacts.template.length}}">
-                                                <strong>{{obj.Name}}</strong>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td ng-repeat="temp in Contacts.template">
-                                                <span class="text-muted">&nbsp;{{obj[temp.name]}}</span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="img-wrap col-xs-2 col-sm-1">
+                        <img class="img-attr-thumb img-circle img-{{obj.Key}}"
+                             src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="SmallImage"
+                             alt="User Pic">
+                    </div>
+                    <div class="col-xs-10 col-sm-11 summary-table">
+                        <div>
+                            <div class="col-xs-10 summary-row">
+                                <strong>{{obj.Name}}</strong>
+                            </div>
+                            <div class="col-xs-2 user-info-select">
+                                <i class="glyphicon glyphicon-chevron-{{obj.direction}} text-muted"
+                                   ng-click="Contacts.expand(obj);"></i>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 summary-row">
+                            <span ng-repeat="temp in Contacts.template"
+                                  class="{{obj[temp.name].length > 0 ? 'text-muted' : 'text-hidden';}}">
+                                {{obj[temp.name]}}&nbsp;
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <div id="{{obj.Key}}" class="row user-infos" style="display:none">
                     <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-xs-offset-0 col-sm-offset-0 col-md-offset-1 col-lg-offset-1">
                         <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <span class="pull-right">
+                            <div class="panel-heading col-xs-12">
+                                <div class="col-xs-4">
+                                    <h3 class="panel-title">User information</h3>
+                                </div>
+                                <div class="col-xs-8">
                                     <table class="user-info">
                                         <tr>
-                                            <td nowrap>
-                                                <div>
-                                                    <h3 class="panel-title">User information</h3>
-                                                </div>
-                                            </td>
                                             <td>
                                                 <input id="upload-{{obj.Key}}" type="file" style="visibility:hidden"
                                                        onchange="readSingleFile(this);" />
@@ -121,7 +108,15 @@
                                                 &nbsp;&nbsp;&nbsp;
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm btn-danger" type="button"
+                                                <button class="btn btn-sm btn-warning {{obj.editclass}}" type="button"
+                                                        ng-click="Contacts.refresh(obj);"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Refresh saved values">
+                                                    <i class="glyphicon glyphicon-refresh"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-danger  {{obj.showclass}}" type="button"
                                                         ng-click="Contacts.remove(obj);"
                                                         data-toggle="tooltip"
                                                         data-original-title="Delete this user">
@@ -130,7 +125,7 @@
                                             </td>
                                         </tr>
                                     </table>
-                                </span>
+                                </div>
                             </div>
                             <div class="panel-body">
                                 <div class="row">
@@ -199,10 +194,17 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="panel-footer">
-                                <span class="pull-right">
-                                    <table>
+                            <div class="panel-footer col-xs-12">
+                                <div class="col-xs-4">
+                                    <h3 class="panel-title"></h3>
+                                </div>
+                                <div class="col-xs-8">
+                                    <table class="user-info">
                                         <tr>
+                                            <td>
+                                                <input id="upload-{{obj.Key}}" type="file" style="visibility:hidden"
+                                                       onchange="readSingleFile(this);" />
+                                            </td>
                                             <td>
                                                 <button class="btn btn-sm btn-primary {{obj.loadclass}}" type="button"
                                                         ng-click="Contacts.upload(obj);"
@@ -234,7 +236,15 @@
                                                 &nbsp;&nbsp;&nbsp;
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm btn-danger" type="button"
+                                                <button class="btn btn-sm btn-warning {{obj.editclass}}" type="button"
+                                                        ng-click="Contacts.refresh(obj);"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Refresh saved values">
+                                                    <i class="glyphicon glyphicon-refresh"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-danger  {{obj.showclass}}" type="button"
                                                         ng-click="Contacts.remove(obj);"
                                                         data-toggle="tooltip"
                                                         data-original-title="Delete this user">
@@ -243,7 +253,7 @@
                                             </td>
                                         </tr>
                                     </table>
-                                </span>
+                                </div>
                             </div>
                         </div>
                     </div>

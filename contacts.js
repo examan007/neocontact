@@ -26,6 +26,7 @@ function execute_ContactApp() {
         Contacts.scope = $scope;
         Contacts.contactname = '';
         Contacts.results = [];
+        Contacts.savedvalues = null;
         Contacts.Debug = 0;
         Contacts.update = function () {
             Contacts.scope.$apply();
@@ -46,6 +47,18 @@ function execute_ContactApp() {
             console.log('edit obj=' + JSON.stringify(obj));
             obj.editclass = 'noshow';
             toggleEdit(obj);
+            Contacts.savedvalues = JSON.parse(JSON.stringify(obj));
+        }
+        Contacts.refresh = function (obj) {
+            toggleEdit(obj);
+            try {
+                if (Contacts.savedvalues == null) {} else
+                if (typeof(obj.Key) === 'undefined') {} else {
+                    //window.setTimeout(initImages, 1000);
+                }
+            } catch (e) {
+                console.log('refresh ' + e.toString());
+            }
         }
         Contacts.sendData = function (data, success, failure) {
             if (Contacts.Debug < 1) { } else
@@ -135,7 +148,7 @@ function execute_ContactApp() {
         Contacts.remove = function (obj) {
             Contacts.results.push({
                 name: 'Are you sure?',
-                message: 'Undo is not implemented; item will be lost!'
+                message: 'Undo is not implemented; [' + obj.Name + '] will be lost!'
             });
             ModalObj('Contacts-Modal', [{
                     prefix: '-close',
