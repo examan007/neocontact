@@ -5,12 +5,27 @@ var ContactManager = {
     getController: function () {
         return (Contacts);
     },
+    DeviceType: false,
+    isDevice: function () {
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            console.log('DeviceType is set for device!')
+            ContactManager.DeviceType = true;
+        }
+        return (ContactManager.DeviceType);
+    },
+    setToolTip: function () {
+        if (ContactManager.DeviceType == false) {
+            $('[data-toggle="tooltip"]').tooltip();
+        }
+    }
 }
+ContactManager.isDevice();
 function execute_ContactApp() {
     ContactModule.controller('ContactController', ['$scope', function ($scope) {
         Contacts = this;
         Contacts.scope = $scope;
         Contacts.contactname = '';
+        Contacts.results = [];
         Contacts.Debug = 0;
         Contacts.update = function () {
             Contacts.scope.$apply();
@@ -118,27 +133,45 @@ function execute_ContactApp() {
             });
         }
         Contacts.remove = function (obj) {
-            alert('Are you sure? undo is not implemented; close browser to prevent removal!');
-            console.log('remove obj=' + JSON.stringify(obj));
-            obj.operation = 'delete';
-            Contacts.sendData(obj, function (data) {
-                console.log('sendData response=' + JSON.stringify(data));
-                if (data.status === 'Error') {
-                    alert(data.message);
-                } else {
-                    console.log('remove post obj=' + JSON.stringify(obj));
-                    for (var i = 0; i < Contacts.objects.length; i++) {
-                        if (Contacts.objects[i].Key === obj.Key) {
-                            Contacts.removeFromHashMap(obj);
-                            Contacts.objects.splice(i, 1);
-                            break;
-                        }
-                    }
-                    Contacts.update();
-                }
-            }, function (msg) {
-                alert(msg);
+            Contacts.results.push({
+                name: 'Are you sure?',
+                message: 'Undo is not implemented; item will be lost!'
             });
+            ModalObj('Contacts-Modal', [{
+                    prefix: '-close',
+                    method: function (modal) {
+                        Contacts.results = [];
+                    }
+                },{
+                    prefix: '-ok',
+                    method: complete(obj)
+                }]
+            ).show();
+            function complete (obj) {
+                return (function () {
+                    Contacts.results = [];
+                    console.log('remove obj=' + JSON.stringify(obj));
+                    obj.operation = 'delete';
+                    Contacts.sendData(obj, function (data) {
+                        console.log('sendData response=' + JSON.stringify(data));
+                        if (data.status === 'Error') {
+                            alert(data.message);
+                        } else {
+                            console.log('remove post obj=' + JSON.stringify(obj));
+                            for (var i = 0; i < Contacts.objects.length; i++) {
+                                if (Contacts.objects[i].Key === obj.Key) {
+                                    Contacts.removeFromHashMap(obj);
+                                    Contacts.objects.splice(i, 1);
+                                    break;
+                                }
+                            }
+                            Contacts.update();
+                        }
+                    }, function (msg) {
+                        alert(msg);
+                    });
+                });
+            }
         }
         Contacts.upload = function (obj) {
             //console.log('upload obj=' + JSON.stringify(obj));
@@ -177,7 +210,7 @@ function execute_ContactApp() {
                         Contacts.objects.unshift(obj);
                         Contacts.update();
                         try {
-                            $('[data-toggle="tooltip"]').tooltip();
+                            ContactManager.setToolTip();
                             $('#' + obj.Key).show();
                         } catch (e) {}
                     } else {
@@ -267,8 +300,10 @@ function execute_ContactApp() {
 }
 
 $(document).ready(function() {
+    if (ContactManager.DeviceType == true) {
+        $('[rel=tooltip]').tooltip({ trigger: "hover" });
+    }
     window.setTimeout(initContacts, 0);
-    $('[rel=tooltip]').tooltip({ trigger: "hover" });
 });
 
 function initContacts() {
@@ -293,12 +328,10 @@ function initContacts() {
 }
 function initImages() {
     console.log('initImages ... z');
-    $('[data-toggle="tooltip"]').tooltip();
-
+    ContactManager.setToolTip();
     $('button').click(function(e) {
         e.preventDefault();
     });
-
     Contacts.objects.forEach( function (obj) {
         try {
             var tag = '#' + obj.Key;
@@ -355,6 +388,7 @@ function toggleEdit(obj) {
     } catch (e) {
         console.log('toggleEdit' + e.toString());
     }
+    ContactManager.setToolTip();
 }
 
 function readSingleFile(element) {
