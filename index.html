@@ -111,12 +111,12 @@
                                                 <button class="btn btn-sm btn-warning {{obj.editclass}}" type="button"
                                                         ng-click="Contacts.refresh(obj);"
                                                         data-toggle="tooltip"
-                                                        data-original-title="Refresh saved values">
+                                                        data-original-title="Refresh">
                                                     <i class="glyphicon glyphicon-refresh"></i>
                                                 </button>
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm btn-danger  {{obj.showclass}}" type="button"
+                                                <button class="btn btn-sm btn-danger hastooltip {{obj.showclass}}" type="button"
                                                         ng-click="Contacts.remove(obj);"
                                                         data-toggle="tooltip"
                                                         data-original-title="Delete this user">
@@ -244,7 +244,7 @@
                                                 </button>
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm btn-danger  {{obj.showclass}}" type="button"
+                                                <button class="btn btn-sm btn-danger hastooltip {{obj.showclass}}" type="button"
                                                         ng-click="Contacts.remove(obj);"
                                                         data-toggle="tooltip"
                                                         data-original-title="Delete this user">
@@ -260,15 +260,19 @@
                 </div>
             </div>
             <div id="Contacts-Modal" class="modal">
-                <div class="modal-content">
-                    <div>
-                        <p class="modal-entry col-xs-12" ng-repeat="entry in Contacts.results"><b>{{entry.name}}:</b>&nbsp;{{entry.message}}</p>
-                    </div>
-                    <div>
-                        <div id="Contacts-Modal-close" class="close col-xs-6">&lt;cancel&gt;</div>
-                        <div id="Contacts-Modal-ok" class="close col-xs-6">&lt;delete&gt;</div>
-                    </div>
-                </div>
+                <table class="modal-content">
+                    <tr>
+                        <td>
+                            <div>
+                                <p class="modal-entry col-xs-12" ng-repeat="entry in Contacts.results"><b>{{entry.name}}:</b>&nbsp;{{entry.message}}</p>
+                            </div>
+                            <div>
+                                <div id="Contacts-Modal-close" class="close col-xs-6">&lt;cancel&gt;</div>
+                                <div id="Contacts-Modal-ok" class="close col-xs-6">&lt;delete&gt;</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>

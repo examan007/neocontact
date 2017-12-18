@@ -16,6 +16,8 @@ var ContactManager = {
     setToolTip: function () {
         if (ContactManager.DeviceType == false) {
             $('[data-toggle="tooltip"]').tooltip();
+            $('[rel=tooltip]').tooltip({ trigger: "hover" });
+            hideTooltips();
         }
     }
 }
@@ -150,7 +152,7 @@ function execute_ContactApp() {
                 name: 'Are you sure?',
                 message: 'Undo is not implemented; [' + obj.Name + '] will be lost!'
             });
-            ModalObj('Contacts-Modal', [{
+            var modalobj = ModalObj('Contacts-Modal', [{
                     prefix: '-close',
                     method: function (modal) {
                         Contacts.results = [];
@@ -159,7 +161,9 @@ function execute_ContactApp() {
                     prefix: '-ok',
                     method: complete(obj)
                 }]
-            ).show();
+            );
+            hideTooltips();
+            modalobj.show();
             function complete (obj) {
                 return (function () {
                     Contacts.results = [];
@@ -221,6 +225,7 @@ function execute_ContactApp() {
                     } else
                     if (Contacts.addToHashMap(obj) == true) {
                         Contacts.objects.unshift(obj);
+                        Contacts.contactname = '';
                         Contacts.update();
                         try {
                             ContactManager.setToolTip();
@@ -313,9 +318,6 @@ function execute_ContactApp() {
 }
 
 $(document).ready(function() {
-    if (ContactManager.DeviceType == true) {
-        $('[rel=tooltip]').tooltip({ trigger: "hover" });
-    }
     window.setTimeout(initContacts, 0);
 });
 
@@ -481,4 +483,31 @@ function displayContents(contents, key) {
         }
     }
     Contacts.update();
+}
+
+function hideTooltips () {
+    try {
+        var HasTooltip = $('.hastooltip');
+        HasTooltip.on('click', function(e) {
+        e.preventDefault();
+        var isShowing = $(this).data('isShowing');
+        HasTooltip.removeData('isShowing');
+        if (isShowing !== 'true')
+        {
+            HasTooltip.not(this).tooltip('hide');
+            $(this).data('isShowing', "true");
+            $(this).tooltip('show');
+        }
+        else
+        {
+            $(this).tooltip('hide');
+        }
+
+        }).tooltip({
+        animation: true,
+        trigger: 'manual'
+        });
+    } catch (e) {
+        console.log('hideToolTips ' + e.toString());
+    }
 }
