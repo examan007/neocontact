@@ -162,7 +162,7 @@ function execute_ContactApp() {
                     method: complete(obj)
                 }]
             );
-            hideTooltips();
+            ContactManager.setToolTip();
             modalobj.show();
             function complete (obj) {
                 return (function () {
