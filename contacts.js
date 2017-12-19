@@ -48,16 +48,33 @@ function execute_ContactApp() {
         Contacts.edit = function (obj) {
             console.log('edit obj=' + JSON.stringify(obj));
             obj.editclass = 'noshow';
-            toggleEdit(obj);
             Contacts.savedvalues = JSON.parse(JSON.stringify(obj));
+            toggleEdit(obj);
         }
         Contacts.refresh = function (obj) {
             toggleEdit(obj);
+            console.log('saved=' + JSON.stringify(Contacts.savedvalues));
             try {
                 if (Contacts.savedvalues == null) {} else
-                if (typeof(obj.Key) === 'undefined') {} else {
-                    //window.setTimeout(initImages, 1000);
+                if ( typeof (obj.Key) === 'undefined') {} else
+                if ( typeof (Contacts.hashmap[obj.Key]) === 'undefined') {} else {
+                    obj = Contacts.hashmap[obj.Key];
+                    for(var k in Contacts.savedvalues) {
+                        obj [k] = Contacts.savedvalues[k];
+                    }
+                    var done = true;
+                    do {
+                        done = true;
+                        for(var k in obj) {
+                            if (typeof(Contacts.savedvalues[k]) === 'undefined') {
+                                delete (obj[k]);
+                                done = false;
+                                break;
+                            }
+                        }
+                    } while (!done);
                 }
+                initImages(false);
             } catch (e) {
                 console.log('refresh ' + e.toString());
             }
@@ -333,6 +350,13 @@ function initContacts() {
             delete (obj['$$hashKey']);
             toggleEdit(obj);
             Contacts.addToHashMap(obj);
+            try {
+			    var tag = '#' + obj.Key;
+			    console.log(tag);
+			    $(tag).hide();
+            } catch (e) {
+                console.log(e.toString());
+            }
         });
         Contacts.update();
         window.setTimeout(initImages, 0);
@@ -341,26 +365,18 @@ function initContacts() {
         window.setTimeout(initContacts, 2000);
     });
 }
-function initImages() {
+function initImages(flag) {
     console.log('initImages ... z');
     ContactManager.setToolTip();
     $('button').click(function(e) {
         e.preventDefault();
     });
-    Contacts.objects.forEach( function (obj) {
-        try {
-            var tag = '#' + obj.Key;
-            console.log(tag);
-            $(tag).hide();
-
-        } catch (e) {
-            console.log(e.toString());
-        }
-    });
     var i = 0;
     try {
         test(document.getElementById('ContactManager'));
-        Contacts.update();
+        if (typeof(flag) === 'undefined') {
+            Contacts.update();
+        }
     } catch (e) {
         console.log(e.toString());
     }
